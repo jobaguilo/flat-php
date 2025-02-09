@@ -46,6 +46,37 @@ class TasksController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'update', methods: ['PATCH'])]
+    public function update(Tasks $task, Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['priority'])) {
+            $task->setPriority($data['priority']);
+        }
+        if (isset($data['status'])) {
+            $task->setStatus($data['status']);
+        }
+        if (isset($data['result'])) {
+            $task->setResult($data['result']);
+        }
+        if (isset($data['executedAt'])) {
+            $task->setExecutedAt(new \DateTimeImmutable($data['executedAt']));
+        }
+
+        $this->entityManager->flush();
+
+        return $this->json([
+            'id' => $task->getId(),
+            'type' => $task->getType(),
+            'priority' => $task->getPriority(),
+            'status' => $task->getStatus(),
+            'result' => $task->getResult(),
+            'createdAt' => $task->getCreatedAt()->format('Y-m-d H:i:s'),
+            'executedAt' => $task->getExecutedAt() ? $task->getExecutedAt()->format('Y-m-d H:i:s') : null,
+        ]);
+    }
+
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {

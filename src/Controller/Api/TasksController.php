@@ -20,22 +20,32 @@ class TasksController extends AbstractController
     public function list(Request $request): JsonResponse
     {
         $statusParam = $request->query->get('status');
+        $orderBy = $request->query->get('order');
         $repository = $this->entityManager->getRepository(Tasks::class);
+
+        $criteria = [];
+        $orderCriteria = ['id' => 'ASC'];
 
         if ($statusParam !== null) {
             $status = TaskStatus::fromString($statusParam);
             if ($status !== null) {
-                $tasks = $repository->findBy(['status' => $status->value]);
+                $criteria['status'] = $status->value;
             } else {
                 return $this->json(['error' => 'Invalid status parameter. Valid values are: pending, active, executed, deleted'], 400);
             }
         } else {
-            $tasks = $repository->findBy(['status' => [
+            $criteria['status'] = [
                 TaskStatus::PENDING->value,
                 TaskStatus::ACTIVE->value,
                 TaskStatus::EXECUTED->value
-            ]]);
+            ];
         }
+
+        if ($orderBy === 'priority') {
+            $orderCriteria = ['priority' => 'ASC', 'id' => 'ASC'];
+        }
+
+        $tasks = $repository->findBy($criteria, $orderCriteria);
 
         $data = array_map(fn(Tasks $task) => [
             'id' => $task->getId(),

@@ -23,16 +23,8 @@ class SubscriberController extends AbstractController
         $processedTasks = [];
 
         while (true) {
-            $response = $this->httpClient->request('GET', 'http://nginx:80/api/tasks?status=pending');
+            $response = $this->httpClient->request('GET', 'http://nginx:80/api/tasks?status=pending&order=priority');
             $tasks = $response->toArray();
-            
-            // Sort tasks by priority and id in descending order
-            usort($tasks, function($a, $b) {
-                if ($a['priority'] === $b['priority']) {
-                    return $b['id'] - $a['id'];
-                }
-                return $b['priority'] - $a['priority'];
-            });
             
             foreach ($tasks as $task) {
                 if (!in_array($task['id'], $processedTasks)) {

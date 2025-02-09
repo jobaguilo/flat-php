@@ -70,8 +70,14 @@ class SubscriberController extends AbstractController
         return json_encode($data);
     }
 
-    private function processType3(): string
+    private function processDateTask(): string
     {
+        sleep(5);
+        
+        if (rand(1, 100) <= 25) {
+            throw new \RuntimeException('Error returning date');
+        }
+
         return (new \DateTime())->format('Y-m-d H:i:s');
     }
 }

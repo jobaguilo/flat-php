@@ -50,7 +50,7 @@ class SubscriberController extends AbstractController
         return new Response('Tasks processed successfully');
     }
 
-    private function processType1(): string
+    private function processTitleTask(): string
     {
         $response = $this->httpClient->request('GET', 'https://sv443.net/jokeapi/v2/');
         $content = $response->getContent();
@@ -62,7 +62,7 @@ class SubscriberController extends AbstractController
         return 'No title found';
     }
 
-    private function processType2(): string
+    private function processJokeTask(): string
     {
         $response = $this->httpClient->request('GET', 'https://v2.jokeapi.dev/joke/Any');
         $data = $response->toArray();

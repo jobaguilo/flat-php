@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Tasks;
+use App\Enum\TaskStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,9 +17,26 @@ class TasksController extends AbstractController
     {}
 
     #[Route('', name: 'list', methods: ['GET'])]
-    public function list(): JsonResponse
+    public function list(Request $request): JsonResponse
     {
-        $tasks = $this->entityManager->getRepository(Tasks::class)->findAll();
+        $statusParam = $request->query->get('status');
+        $repository = $this->entityManager->getRepository(Tasks::class);
+
+        if ($statusParam !== null) {
+            $status = TaskStatus::fromString($statusParam);
+            if ($status !== null) {
+                $tasks = $repository->findBy(['status' => $status->value]);
+            } else {
+                return $this->json(['error' => 'Invalid status parameter. Valid values are: pending, active, executed, deleted'], 400);
+            }
+        } else {
+            $tasks = $repository->findBy(['status' => [
+                TaskStatus::PENDING->value,
+                TaskStatus::ACTIVE->value,
+                TaskStatus::EXECUTED->value
+            ]]);
+        }
+
         $data = array_map(fn(Tasks $task) => [
             'id' => $task->getId(),
             'type' => $task->getType(),
@@ -75,6 +93,15 @@ class TasksController extends AbstractController
             'createdAt' => $task->getCreatedAt()->format('Y-m-d H:i:s'),
             'executedAt' => $task->getExecutedAt() ? $task->getExecutedAt()->format('Y-m-d H:i:s') : null,
         ]);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(Tasks $task): JsonResponse
+    {
+        $task->setStatus(3);
+        $this->entityManager->flush();
+
+        return $this->json(null, 204);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]

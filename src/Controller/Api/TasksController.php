@@ -42,7 +42,7 @@ class TasksController extends AbstractController
         }
 
         if ($orderBy === 'priority') {
-            $orderCriteria = ['priority' => 'ASC', 'id' => 'ASC'];
+            $orderCriteria = ['priority' => 'DESC', 'id' => 'ASC'];
         }
 
         $tasks = $repository->findBy($criteria, $orderCriteria);

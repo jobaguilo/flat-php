@@ -19,7 +19,7 @@ class SubscriberController extends AbstractController
     #[Route('/subscriber', name: 'subscriber_tasks')]
     public function listTasks(): Response
     {
-        set_time_limit(0); // Prevent PHP timeout
+        set_time_limit(0);
         $processedTasks = [];
 
         while (true) {
@@ -34,7 +34,6 @@ class SubscriberController extends AbstractController
                             throw new \RuntimeException("Task {$task['id']} not found");
                         }
                         
-                        // Set as executing
                         $taskEntity->setStatus(1);
                         $taskEntity->setExecutedAt(new \DateTimeImmutable());
                         $this->entityManager->flush();
@@ -46,14 +45,12 @@ class SubscriberController extends AbstractController
                             default => 'Unknown task type',
                         };
                         
-                        // Update with result
                         $taskEntity->setStatus(2);
                         $taskEntity->setResult($result);
                         $taskEntity->setExecutedAt(new \DateTimeImmutable());
                         $this->entityManager->flush();
                         $processedTasks[] = $task['id'];
                     } catch (\Exception $e) {
-                        // Handle errors
                         if (!$this->entityManager->isOpen()) {
                             $this->entityManager = $this->entityManager->create(
                                 $this->entityManager->getConnection(),
@@ -73,12 +70,10 @@ class SubscriberController extends AbstractController
                 }
             }
 
-            // Prevent memory issues by limiting the processed tasks array
             if (count($processedTasks) > 10) {
                 $processedTasks = array_slice($processedTasks, -10);
             }
             
-            // Wait 5 seconds before next check
             sleep(5); 
         }
     }

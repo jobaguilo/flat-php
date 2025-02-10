@@ -8,25 +8,21 @@ A Symfony-based task processing system that handles different types of tasks wit
 ```
 git clone https://github.com/jobaguilo/flat-php.git
 cd flat-php
- ```
 ```
 
 2. Start docker containers
 ```bash
 docker-compose up -d
- ```
 ```
 
 3. Install dependencies
 ```bash
 docker-compose exec php composer install
- ```
 ```
 
 4. Run database migrations
 ```bash
 docker-compose exec php php bin/console doctrine:migrations:migrate
- ```
 ```
 
 ## Usage
@@ -39,7 +35,6 @@ curl -X POST http://localhost:8080/api/tasks \
     "type": "1",
     "priority": 2
   }'
- ```
 ```
 Types must be:
 - 1: Title fetch (gets webpage title)
@@ -64,12 +59,10 @@ curl http://localhost:8080/api/tasks?order=priority
 
 # Combined filters
 curl http://localhost:8080/api/tasks?status=pending&order=priority
- ```
 ```
  Get Single Task (id)
 ```bash
 curl http://localhost:8080/api/tasks/1
- ```
 ```
  Update Task
 ```bash
@@ -79,12 +72,10 @@ curl -X PATCH http://localhost:8080/api/tasks/1 \
     "priority": 1,
     "status": 2
   }'
- ```
 ```
  Delete Task (Logical)
 ```bash
 curl -X DELETE http://localhost:8080/api/tasks/1
- ```
 ```
 
 ### Task Generation
@@ -98,7 +89,6 @@ Start the task processor/s by visiting http://localhost:8080/subscriber .
 Also can be executed from terminal with the command:
 ```bash
 docker-compose exec php php bin/console app:process-tasks
- ```
 ```
 This will:
 
@@ -146,5 +136,4 @@ Tasks are returned in JSON format:
     "createdAt": "2024-01-01 12:00:00",
     "executedAt": "2024-01-01 12:01:00"
 }
- ```
 ```

@@ -77,9 +77,9 @@ class SubscriberController extends AbstractController
             if (count($processedTasks) > 10) {
                 $processedTasks = array_slice($processedTasks, -10);
             }
-
-            echo 'wait/n';
-            sleep(5); // Wait 5 seconds before next check
+            
+            // Wait 5 seconds before next check
+            sleep(5); 
         }
     }
 
@@ -111,7 +111,7 @@ class SubscriberController extends AbstractController
 
     private function processJokeTask(): string
     {
-        $response = $this->httpClient->request('GET', 'https://v2.jokeapi.dev/joke/Any');
+        $response = $this->httpClient->request('GET', 'https://v2.jokeapi.dev/joke/Any?type=single');
         $data = $response->toArray();
         
         return $data['joke'] ?? 'No joke found';
